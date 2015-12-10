@@ -30,14 +30,14 @@ DEFINE_SAORI_FUNCTION(new)
     int width = conv<int>(in.args[0]);
     int height = conv<int>(in.args[1]);
 
-	// イメージ ID を生成する
-	GENERATE_IMAGE_INDEX(id);
+    // イメージ ID を生成する
+    GENERATE_IMAGE_INDEX(id);
 
     // 新しく画像を作成
-	std::unique_ptr<image> img(new image(width, height));
+    std::unique_ptr<image> img(new image(width, height));
 
     // リストに追加する
-	images.insert(std::make_pair(id, std::move(img)));
+    images.insert(std::make_pair(id, std::move(img)));
 
     // イメージ ID を返す
     out.result = conv<string_t>(id);
@@ -52,23 +52,23 @@ DEFINE_SAORI_FUNCTION(load)
     // 引数の個数を確認
     VERIFY_ARGUMENT(1);
 
-	// イメージ ID を生成する
-	GENERATE_IMAGE_INDEX(id);
+    // イメージ ID を生成する
+    GENERATE_IMAGE_INDEX(id);
 
-	for (auto it = in.args.cbegin(); it != in.args.cend(); ++it)
-	{
-		// 新しく画像を作成
-		std::unique_ptr<image> img(new image());
+    for (auto it = in.args.cbegin(); it != in.args.cend(); ++it)
+    {
+        // 新しく画像を作成
+        std::unique_ptr<image> img(new image());
 
-		// ファイルを読み込む
-		if (!png_load_image(*it, *img))
-		{
-			return SAORIRESULT_BAD_REQUEST;
-		}
+        // ファイルを読み込む
+        if (!png_load_image(*it, *img))
+        {
+            return SAORIRESULT_BAD_REQUEST;
+        }
 
-		// リストに追加する
-		images.insert(std::make_pair(id, std::move(img)));
-	}
+        // リストに追加する
+        images.insert(std::make_pair(id, std::move(img)));
+    }
 
     // イメージ ID を返す
     out.result = conv<string_t>(id);
@@ -89,23 +89,23 @@ DEFINE_SAORI_FUNCTION(save)
     // インデックスを検証
     VERIFY_IMAGE_INDEX(index);
 
-	int id = 1;
+    int id = 1;
 
-	auto range = images.equal_range(index);
+    auto range = images.equal_range(index);
 
-	for (auto it = range.first; it != range.second; ++it)
-	{
-		// 保存する画像を取得
-		image &img = *it->second;
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        // 保存する画像を取得
+        image &img = *it->second;
 
-		// ファイルに書き込む
-		if (!png_save_image(in.args[id], img))
-		{
-			return SAORIRESULT_BAD_REQUEST;
-		}
+        // ファイルに書き込む
+        if (!png_save_image(in.args[id], img))
+        {
+            return SAORIRESULT_BAD_REQUEST;
+        }
 
-		id += 1;
-	}
+        id += 1;
+    }
 
     // 200 OK を返す
     return SAORIRESULT_OK;
@@ -136,8 +136,8 @@ DEFINE_SAORI_FUNCTION(draw)
     VERIFY_IMAGE_INDEX(elem_index);
 
     // イメージを取得する
-	image &base = *images.lower_bound(base_index)->second;
-	image &elem = *images.lower_bound(elem_index)->second;
+    image &base = *images.lower_bound(base_index)->second;
+    image &elem = *images.lower_bound(elem_index)->second;
 
     // 追加パラメータを取得する
     int x = conv<int>(in.args[2]);
@@ -165,19 +165,19 @@ DEFINE_SAORI_FUNCTION(fill)
     // インデックスを確認する
     VERIFY_IMAGE_INDEX(index);
 
-	// 追加パラメータを取得する
-	color fill_color(conv<color::value_type>(in.args[1]));
+    // 追加パラメータを取得する
+    color fill_color(conv<color::value_type>(in.args[1]));
 
-	auto range = images.equal_range(index);
-	
-	for (auto it = range.first; it != range.second; ++it)
-	{
-		// イメージを取得する
-		image &img = *it->second;
+    auto range = images.equal_range(index);
 
-		// 塗りつぶす
-		fill_image(img, fill_color);
-	}
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        // イメージを取得する
+        image &img = *it->second;
+
+        // 塗りつぶす
+        fill_image(img, fill_color);
+    }
 
     // 200 OK を返す
     return SAORIRESULT_OK;
@@ -196,7 +196,7 @@ DEFINE_SAORI_FUNCTION(pixel)
     VERIFY_IMAGE_INDEX(index);
 
     // イメージを取得する
-	image &img = *images.lower_bound(index)->second;
+    image &img = *images.lower_bound(index)->second;
 
     // パラメータを取得する
     int x = conv<int>(in.args[1]);
@@ -234,16 +234,16 @@ DEFINE_SAORI_FUNCTION(repaint)
     color before(conv<color::value_type>(in.args[1]));
     color after(conv<color::value_type>(in.args[2]));
 
-	auto range = images.equal_range(index);
-	
-	for (auto it = range.first; it != range.second; ++it)
-	{
-		// イメージを取得する
-		image &img = *it->second;
+    auto range = images.equal_range(index);
 
-		// repaint_function 処理を実行する
-		img.transform(repaint_function(before, after));
-	}
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        // イメージを取得する
+        image &img = *it->second;
+
+        // repaint_function 処理を実行する
+        img.transform(repaint_function(before, after));
+    }
 
     // 200 OK を返す
     return SAORIRESULT_OK;
@@ -266,16 +266,16 @@ DEFINE_SAORI_FUNCTION(tone)
     int green = conv<int>(in.args[2]);
     int blue = conv<int>(in.args[3]);
 
-	auto range = images.equal_range(index);
-	
-	for (auto it = range.first; it != range.second; ++it)
-	{
-		// イメージを取得する
-		image &img = *it->second;
+    auto range = images.equal_range(index);
 
-		// tone_function 処理を行う
-		img.transform(tone_function(red, green, blue));
-	}
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        // イメージを取得する
+        image &img = *it->second;
+
+        // tone_function 処理を行う
+        img.transform(tone_function(red, green, blue));
+    }
 
     // 200 OK を返す
     return SAORIRESULT_OK;
@@ -294,7 +294,7 @@ DEFINE_SAORI_FUNCTION(cut)
     VERIFY_IMAGE_INDEX(index);
 
     // イメージを取得する
-	image &src = *images.lower_bound(index)->second;
+    image &src = *images.lower_bound(index)->second;
 
     // 追加パラメータを取得
     int x = conv<int>(in.args[1]);
@@ -302,11 +302,11 @@ DEFINE_SAORI_FUNCTION(cut)
     int width = conv<int>(in.args[3]);
     int height = conv<int>(in.args[4]);
 
-	// イメージ ID を生成する
-	GENERATE_IMAGE_INDEX(id);
+    // イメージ ID を生成する
+    GENERATE_IMAGE_INDEX(id);
 
     // 新しくイメージを作成する
-	std::unique_ptr<image> dst(new image());
+    std::unique_ptr<image> dst(new image());
 
     // 部分画像を取得する
     if (!src.sub_image(*dst, x, y, width, height))
@@ -315,7 +315,7 @@ DEFINE_SAORI_FUNCTION(cut)
     }
 
     // リストに追加する
-	images.insert(std::make_pair(id, std::move(dst)));
+    images.insert(std::make_pair(id, std::move(dst)));
 
     // イメージ ID を返す
     out.result = conv<string_t>(images.size());
@@ -337,7 +337,7 @@ DEFINE_SAORI_FUNCTION(resize)
     VERIFY_IMAGE_INDEX(index);
 
     // イメージを取得する
-	image &src = *images.lower_bound(index)->second;
+    image &src = *images.lower_bound(index)->second;
 
     int width;
     int height;
@@ -378,56 +378,56 @@ DEFINE_SAORI_FUNCTION(resize)
         return SAORIRESULT_BAD_REQUEST;
     }
 
-	// イメージ ID を生成する
-	GENERATE_IMAGE_INDEX(id);
+    // イメージ ID を生成する
+    GENERATE_IMAGE_INDEX(id);
 
     // 新しくイメージを作成し、リストに追加する
-	std::unique_ptr<image> dst(new image(width, height));
+    std::unique_ptr<image> dst(new image(width, height));
 
-	if (src.width() == width && src.height() == height)
-	{
-		memcpy(dst->buffer(), src.buffer(), width * height * sizeof(color));
-	}
-	else
-	{
-		// リサイズ画像を取得する
-		if (method == _T("ssp") || method == _T("nearest_neighbor"))
-		{
-			// ニアレストネイバー
-			src.resize(*dst, nearest_neighbor_sampler());
-		}
-		else if (method == _T("fast") || method == _T("bilinear"))
-		{
-			// バイリニア
-			src.resize(*dst, bilinear_sampler());
-		}
-		else if (method == _T("quality") || method == _T("bicubic"))
-		{
-			// バイキュービック
-			src.resize(*dst, bicubic_sampler());
-		}
-		else if (method == _T("lanczos2"))
-		{
-			// Lanczos-2
-			src.resize(*dst, lanczos2_sampler());
-		}
-		else if (method == _T("lanczos3"))
-		{
-			// Lanczos-3
-			src.resize(*dst, lanczos3_sampler());
-		}
-		else if (method == _T("lanczos4"))
-		{
-			// Lanczos-4
-			src.resize(*dst, lanczos4_sampler());
-		}
-		else
-		{
-			return SAORIRESULT_BAD_REQUEST;
-		}
-	}
+    if (src.width() == width && src.height() == height)
+    {
+        memcpy(dst->buffer(), src.buffer(), width * height * sizeof(color));
+    }
+    else
+    {
+        // リサイズ画像を取得する
+        if (method == _T("ssp") || method == _T("nearest_neighbor"))
+        {
+            // ニアレストネイバー
+            src.resize(*dst, nearest_neighbor_sampler());
+        }
+        else if (method == _T("fast") || method == _T("bilinear"))
+        {
+            // バイリニア
+            src.resize(*dst, bilinear_sampler());
+        }
+        else if (method == _T("quality") || method == _T("bicubic"))
+        {
+            // バイキュービック
+            src.resize(*dst, bicubic_sampler());
+        }
+        else if (method == _T("lanczos2"))
+        {
+            // Lanczos-2
+            src.resize(*dst, lanczos2_sampler());
+        }
+        else if (method == _T("lanczos3"))
+        {
+            // Lanczos-3
+            src.resize(*dst, lanczos3_sampler());
+        }
+        else if (method == _T("lanczos4"))
+        {
+            // Lanczos-4
+            src.resize(*dst, lanczos4_sampler());
+        }
+        else
+        {
+            return SAORIRESULT_BAD_REQUEST;
+        }
+    }
 
-	images.insert(std::make_pair(id, std::move(dst)));
+    images.insert(std::make_pair(id, std::move(dst)));
 
     // イメージ ID を返す
     out.result = conv<string_t>(images.size());
@@ -449,7 +449,7 @@ DEFINE_SAORI_FUNCTION(size)
     VERIFY_IMAGE_INDEX(index);
 
     // イメージを取得する
-	const image &img = *images.lower_bound(index)->second;
+    const image &img = *images.lower_bound(index)->second;
 
     // イメージ ID を返す
     out.result = conv<string_t>(index);
@@ -478,19 +478,19 @@ DEFINE_SAORI_FUNCTION(opacity)
     // インデックスを検証
     VERIFY_IMAGE_INDEX(index);
 
-	// 透明度を取得する
-	int opacity = conv<int>(in.args[1]);
+    // 透明度を取得する
+    int opacity = conv<int>(in.args[1]);
 
-	auto range = images.equal_range(index);
-	
-	for (auto it = range.first; it != range.second; ++it)
-	{
-		// イメージを取得する
-		image &img = *it->second;
+    auto range = images.equal_range(index);
 
-		// opacity_function 処理を実行する
-		img.transform(opacity_function(opacity));
-	}
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        // イメージを取得する
+        image &img = *it->second;
+
+        // opacity_function 処理を実行する
+        img.transform(opacity_function(opacity));
+    }
 
     // 200 OK を返す
     return SAORIRESULT_OK;
@@ -508,23 +508,23 @@ DEFINE_SAORI_FUNCTION(dup)
     VERIFY_IMAGE_INDEX(index);
 
     // イメージを取得する
-	image &img = *images.lower_bound(index)->second;
+    image &img = *images.lower_bound(index)->second;
 
-	// 画像のサイズを取得
-	int width = img.width();
-	int height = img.height();
+    // 画像のサイズを取得
+    int width = img.width();
+    int height = img.height();
 
-	// イメージ ID を生成する
-	GENERATE_IMAGE_INDEX(id);
+    // イメージ ID を生成する
+    GENERATE_IMAGE_INDEX(id);
 
     // 新しく画像を作成
-	std::unique_ptr<image> newimg(new image(width, height));
+    std::unique_ptr<image> newimg(new image(width, height));
 
-	// 画像をコピーする
-	memcpy(newimg->buffer(), img.buffer(), width * height * sizeof(color));
+    // 画像をコピーする
+    memcpy(newimg->buffer(), img.buffer(), width * height * sizeof(color));
 
     // リストに追加する
-	images.insert(std::make_pair(id, std::move(newimg)));
+    images.insert(std::make_pair(id, std::move(newimg)));
 
     // イメージ ID を返す
     out.result = conv<string_t>(images.size());
@@ -550,7 +550,7 @@ bool saori::load()
     REGISTER_SAORI_FUNCTION(size);
     REGISTER_SAORI_FUNCTION(rotate);
     REGISTER_SAORI_FUNCTION(opacity);
-	REGISTER_SAORI_FUNCTION(dup);
+    REGISTER_SAORI_FUNCTION(dup);
     return true;
 }
 

@@ -229,9 +229,9 @@ public:
     {
         // Lanczos のパラメータを計算
         static const int nx = n - 1;
-        
+
         // PI を計算
-        static const double PI = 6.0 * asin( 0.5 );
+        static const double PI = 6.0 * asin(0.5);
 
         // 基準ピクセルを求める
         int x0 = static_cast<int>(x);

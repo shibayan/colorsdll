@@ -29,8 +29,8 @@ struct color
 public:
     // 内部データ型を公開する
     typedef unsigned long value_type;
-	typedef unsigned char pixel_type;
-	// 実データ
+    typedef unsigned char pixel_type;
+    // 実データ
     union
     {
         value_type _abgr;
@@ -42,11 +42,11 @@ public:
     {
     }
     color(int r, int g, int b)
-		: _abgr((round_pixel(b) << 16) + (round_pixel(g) << 8) + round_pixel(r))
+        : _abgr((round_pixel(b) << 16) + (round_pixel(g) << 8) + round_pixel(r))
     {
     }
     color(int a, int r, int g, int b)
-		: _abgr((round_pixel(a) << 24) + (round_pixel(b) << 16) + (round_pixel(g) << 8) + round_pixel(r))
+        : _abgr((round_pixel(a) << 24) + (round_pixel(b) << 16) + (round_pixel(g) << 8) + round_pixel(r))
     {
     }
     color(value_type argb)
@@ -280,9 +280,9 @@ public:
         // 前もってピクセル数を計算しておく
         int length = _width * _height;
 
-		// ループをアンロールする
-		int mod = length & 7;
-		length >>= 3;
+        // ループをアンロールする
+        int mod = length & 7;
+        length >>= 3;
 
         // ループでひたすら処理
         for (int i = 0; i < length; ++i)
@@ -296,42 +296,42 @@ public:
             f(pixels[6]);
             f(pixels[7]);
 
-			pixels += 8;
+            pixels += 8;
         }
 
-		for (int i = 0; i < mod; ++i)
-		{
-			f(pixels[i]);
-		}
+        for (int i = 0; i < mod; ++i)
+        {
+            f(pixels[i]);
+        }
     }
     bool calc_clipping(int &x, int &y, int &sx, int &sy, int &width, int &height) const
     {
-	    // 高速化のために取得しておく
-	    int src_width = _width;
-	    int src_height = _height;
+        // 高速化のために取得しておく
+        int src_width = _width;
+        int src_height = _height;
 
-	    // 描画先の位置が正しいか判定
-	    if(x >= src_width || x >= src_height)
-	    {
-		    // 領域外参照 - 描画不可
-		    return false;
-	    }
+        // 描画先の位置が正しいか判定
+        if (x >= src_width || x >= src_height)
+        {
+            // 領域外参照 - 描画不可
+            return false;
+        }
 
-	    // 描画先の位置が負になってるか判定
-	    if (x < 0)
-	    {
-		    sx = -x;
-		    width += x;
-		    x = 0;
-	    }
-	    if (y < 0)
-	    {
-		    sy = -y;
-		    height += y;
-		    y = 0;
-	    }
+        // 描画先の位置が負になってるか判定
+        if (x < 0)
+        {
+            sx = -x;
+            width += x;
+            x = 0;
+        }
+        if (y < 0)
+        {
+            sy = -y;
+            height += y;
+            y = 0;
+        }
 
-	    // 描画するサイズが正しいか判定
+        // 描画するサイズが正しいか判定
         if ((x + width) > src_width)
         {
             width = src_width - x;
@@ -341,10 +341,10 @@ public:
             height = src_height - y;
         }
 
-	    return true;
+        return true;
     }
 private:
     int _width;
     int _height;
-	std::unique_ptr<color[]> _buffer;
+    std::unique_ptr<color[]> _buffer;
 };

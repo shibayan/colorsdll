@@ -1,5 +1,5 @@
 /*
-	saori.h
+    saori.h
     Multi Platform SAORI Framework
 */
 
@@ -98,81 +98,81 @@ typedef std::basic_ostringstream<char_t> ostringstream_t;
 
 typedef enum
 {
-	SAORIRESULT_OK = 200,
-	SAORIRESULT_NO_CONTENT = 204,
-	SAORIRESULT_BAD_REQUEST = 400,
-	SAORIRESULT_INTERNAL_SERVER_ERROR = 500,
+    SAORIRESULT_OK = 200,
+    SAORIRESULT_NO_CONTENT = 204,
+    SAORIRESULT_BAD_REQUEST = 400,
+    SAORIRESULT_INTERNAL_SERVER_ERROR = 500,
 } SAORIResult;
 
 typedef enum
 {
-	SAORICHARSET_SHIFT_JIS = 932,
-	SAORICHARSET_UTF_8 = 65001,
-	SAORICHARSET_EUC_JP = 20932,
-	SAORICHARSET_ISO_2022_JP = 50220,
+    SAORICHARSET_SHIFT_JIS = 932,
+    SAORICHARSET_UTF_8 = 65001,
+    SAORICHARSET_EUC_JP = 20932,
+    SAORICHARSET_ISO_2022_JP = 50220,
 } SAORICharset;
 
 class saori_input;
 class saori_output;
 
 // SAORI 関数
-typedef std::function<SAORIResult (const saori_input &, saori_output &)> saori_function;
+typedef std::function<SAORIResult(const saori_input &, saori_output &)> saori_function;
 
 // SAORI リクエスト
 class saori_input
 {
 public:
     saori_input(string_t req) { deserialize(req); }
-	bool deserialize(string_t req);
+    bool deserialize(string_t req);
 public:
-	SAORICharset charset;
-	string_t command;
+    SAORICharset charset;
+    string_t command;
     string_t function;
-	std::vector<string_t> args;
-	std::map<string_t, string_t> opts;
+    std::vector<string_t> args;
+    std::map<string_t, string_t> opts;
 };
 
 // SAORI レスポンス
 class saori_output
 {
 public:
-	string_t serialize();
+    string_t serialize();
 public:
-	SAORICharset charset;
-	SAORIResult result_code;
-	string_t result;
-	std::vector<string_t> values;
-	std::map<string_t, string_t> opts;
+    SAORICharset charset;
+    SAORIResult result_code;
+    string_t result;
+    std::vector<string_t> values;
+    std::map<string_t, string_t> opts;
 };
 
 // SAORI メイン
 class saori
 {
 public:
-	saori(const std::string &path)
-	{
+    saori(const std::string &path)
+    {
 #ifdef _SAORI_UNICODE
-		setlocale(LC_ALL, "Japanese");
-		saori_path = to_unicode(SAORICHARSET_SHIFT_JIS, path);
+        setlocale(LC_ALL, "Japanese");
+        saori_path = to_unicode(SAORICHARSET_SHIFT_JIS, path);
 #else
-		saori_path = path;
+        saori_path = path;
 #endif /* _SAORI_UNICODE */
-	}
-	// 実装すべき関数
-	bool load();
-	bool unload();
+    }
+    // 実装すべき関数
+    bool load();
+    bool unload();
     // リクエスト関数
-	std::string request(std::string req);
+    std::string request(std::string req);
 private:
-	string_t saori_path;
+    string_t saori_path;
     std::map<string_t, saori_function> functions;
 public:
-	static string_t from_result(SAORIResult result);
-	static string_t from_charset(SAORICharset charset);
-	static SAORICharset to_charset(const std::string &str);
+    static string_t from_result(SAORIResult result);
+    static string_t from_charset(SAORICharset charset);
+    static SAORICharset to_charset(const std::string &str);
 #ifdef _SAORI_UNICODE
-	static std::wstring to_unicode(SAORICharset charset, const std::string &str);
-	static std::string from_unicode(SAORICharset charset, const std::wstring &wstr);
+    static std::wstring to_unicode(SAORICharset charset, const std::string &str);
+    static std::string from_unicode(SAORICharset charset, const std::wstring &wstr);
 #endif /* _SAORI_UNICODE */
 };
 
@@ -184,7 +184,7 @@ namespace conv_helper
     {
         Target operator()(const Source &src) const
         {
-			return boost::lexical_cast<Target>(src);
+            return boost::lexical_cast<Target>(src);
         }
     };
 
@@ -203,13 +203,13 @@ namespace conv_helper
     {
         char operator()(const Source &src) const
         {
-        	try
-        	{
-            	return static_cast<char>(boost::lexical_cast<int>(src));
+            try
+            {
+                return static_cast<char>(boost::lexical_cast<int>(src));
             }
             catch (...)
             {
-            	return 0;
+                return 0;
             }
         }
     };
